@@ -14,26 +14,20 @@ function execute(options) {
   rm('-rf', out)
   mkdir('-p', out)
 
-  const count = options.sites.length
-  log(`Lighthouse batch run begin for ${count} site${count > 1 ? 's' : ''}`)
-
   const runLighthouse = (run) => {
 
-    const iSites = sitesInfo(options);
-    iSites.map((site, i) => {
-        console.log(`This is my turn ${run}`);
+    const count = options.sites.length
+    log(`Lighthouse batch run begin for ${count} site${count > 1 ? 's' : ''} current run is: ${run}`)
+    
+    sitesInfo(options).map((site, i) => {
         const prefix = `${i + 1}/${count}: `
         const htmlOut = options.html ? ' --output html' : ''
         const finalOutputFolder = path.join(out, String(run))
         mkdir('-p', finalOutputFolder)
         const filePath = path.join(finalOutputFolder, site.file)
-        
         const customParams = options.params || ''
         const chromeFlags = customParams.indexOf('--chrome-flags=') === -1 ? `--chrome-flags="--no-sandbox --headless --disable-gpu"` : ''
         const outputPath = options.html ? filePath.slice(0, -JSON_EXT.length) : filePath
-        
-        console.log(outputPath);
-
         const cmd = `"${site.url}" --output json${htmlOut} --output-path "${outputPath}" ${chromeFlags} ${customParams}`
 
         log(`${prefix}Lighthouse analyzing '${site.url}'`)
@@ -44,11 +38,11 @@ function execute(options) {
 
   };
   
-  log(`Lighthouse batch run end`)
-
   for(let i=0; i < options.runs; i++){
     runLighthouse(i)
   } 
+
+  log(`Lighthouse batch run end`)
 }
 
 function sitesInfo(options) {
@@ -106,7 +100,6 @@ function lighthouseScript(options, log) {
 function siteName(site) {
   return site.replace(/^https?:\/\//, '').replace(/[\/\?#:\*\$@\!\.]/g, '_')
 }
-
 
 function log(v, msg) {
   if (v) console.log(msg)
