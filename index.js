@@ -57,17 +57,17 @@ function execute(options) {
   };
 
   for (let i = 0; i < options.runs; i++) {
-    // runLighthouse(i)
+    runLighthouse(i)
   }
 
   log(`Lighthouse batch run end`);
-  readFiles("jimstoik13", options.runs);
+  readFiles("contra", options.runs);
 }
 
 const readFiles = (name, runs) => {
+  
   const averages = [];
-
-  const pathR = `./report_test/lighthouse/${name}/0/`;
+  const pathR = `./report/lighthouse/${name}/0/`;
 
   fs.readdir(pathR, function (err, files) {
 
@@ -75,9 +75,9 @@ const readFiles = (name, runs) => {
       console.log(`Running for File ${file}`);
 
       func([
-          `./report_test/lighthouse/jimstoik13/0/${file}`,
-          `./report_test/lighthouse/jimstoik13/1/${file}`,
-          `./report_test/lighthouse/jimstoik13/2/${file}`
+          `./report/lighthouse/${name}/0/${file}`,
+          `./report/lighthouse/${name}/1/${file}`,
+          `./report/lighthouse/${name}/2/${file}`
         ])
         .then(res => {
           const summary = {
@@ -115,7 +115,7 @@ const readFiles = (name, runs) => {
           averages.push(avg);
           console.log(averages);
 
-          const summaryPath = `./report_test/lighthouse/jimstoik13/summary.json`;
+          const summaryPath = `./report/lighthouse/jimstoik13/summary.json`;
           fs.writeFileSync(summaryPath, JSON.stringify(averages, null, 4))
 
         })

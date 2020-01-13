@@ -1,14 +1,5 @@
 [
     {
-        "url": "----https://www.google.com/?gws_rd=ssl",
-        "performanceAvg": "0.90",
-        "accessibilityAvg": "0.78",
-        "bestPracticesAvg": "0.79",
-        "seoAvg": "0.92",
-        "firstMeaningfulPaintAvg": "2047.67",
-        "timeToInteractiveAvg": "4486.09"
-    },
-    {
         "url": "https://www.google.com/?gws_rd=ssl",
         "performanceAvg": "0.90",
         "accessibilityAvg": "0.78",
