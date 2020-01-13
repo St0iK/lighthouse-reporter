@@ -2,27 +2,21 @@
 require("shelljs/global");
 const fs = require("fs");
 const fsPromises = require("fs").promises;
-
 const func = filenames => {
   return Promise.all(filenames.map(f => fsPromises.readFile(f)));
 };
-
 Array.prototype.sum = function () {
   return this.reduce(function (a, b) {
     return a + b;
   });
 };
-
 const path = require("path");
 const JSON_EXT = ".report.json";
 const HTML_EXT = ".report.html";
-
 function execute(options) {
   log = log.bind(log, options.verbose || false);
-
   const out = `./report/lighthouse/${options.name}`;
   const lhScript = lighthouseScript(options, log);
-
   rm("-rf", out);
   mkdir("-p", out);
   const runLighthouse = run => {
@@ -32,7 +26,6 @@ function execute(options) {
         count > 1 ? "s" : ""
       } current run is: ${run}`
     );
-
     sitesInfo(options).map((site, i) => {
       const prefix = `${i + 1}/${count}: `;
       const htmlOut = options.html ? " --output html" : "";
@@ -48,37 +41,28 @@ function execute(options) {
         filePath.slice(0, -JSON_EXT.length) :
         filePath;
       const cmd = `"${site.url}" --output json${htmlOut} --output-path "${outputPath}" ${chromeFlags} ${customParams}`;
-
       log(`${prefix}Lighthouse analyzing '${site.url}'`);
       log(cmd);
-
       const outcome = exec(`${lhScript} ${cmd}`);
     });
   };
-
   for (let i = 0; i < options.runs; i++) {
     runLighthouse(i)
   }
-
   log(`Lighthouse batch run end`);
-  readFiles("contra", options.runs);
+  readFiles(options.name, options.runs);
 }
-
 const readFiles = (name, runs) => {
-  
   const averages = [];
   const pathR = `./report/lighthouse/${name}/0/`;
-
   fs.readdir(pathR, function (err, files) {
-
     files.forEach(function (file) {
       console.log(`Running for File ${file}`);
-
-      func([
-          `./report/lighthouse/${name}/0/${file}`,
-          `./report/lighthouse/${name}/1/${file}`,
-          `./report/lighthouse/${name}/2/${file}`
-        ])
+      const fileNames = [];
+      for (let i = 0; i < runs; i++) {
+        fileNames.push(`./report/lighthouse/${name}/${i}/${file}`);
+      }
+      func(fileNames)
         .then(res => {
           const summary = {
             url: "",
@@ -89,10 +73,8 @@ const readFiles = (name, runs) => {
             firstMeaningfulPaint: [],
             timeToInteractive: []
           };
-
           res.forEach((fileBuffer, i) => {
             const parsedFile = JSON.parse(fileBuffer.toString("utf-8"));
-
             summary.url = parsedFile.finalUrl;
             summary.performance.push(parsedFile.categories.performance.score);
             summary.accessibility.push(parsedFile.categories.accessibility.score);
@@ -101,7 +83,6 @@ const readFiles = (name, runs) => {
             summary.firstMeaningfulPaint.push(parsedFile.audits["first-meaningful-paint"].numericValue);
             summary.timeToInteractive.push(parsedFile.audits.interactive.numericValue);
           });
-
           const avg = {
             url: summary.url,
             performanceAvg: (summary.performance.sum() / summary.performance.length).toFixed(2),
@@ -111,19 +92,15 @@ const readFiles = (name, runs) => {
             firstMeaningfulPaintAvg: (summary.firstMeaningfulPaint.sum() / summary.firstMeaningfulPaint.length).toFixed(2),
             timeToInteractiveAvg: (summary.timeToInteractive.sum() / summary.timeToInteractive.length).toFixed(2)
           };
-
           averages.push(avg);
           console.log(averages);
-
-          const summaryPath = `./report/lighthouse/jimstoik13/summary.json`;
+          const summaryPath = `./report/lighthouse/${name}/summary.json`;
           fs.writeFileSync(summaryPath, JSON.stringify(averages, null, 4))
-
         })
         .catch(console.log);
     });
   });
 };
-
 function sitesInfo(options) {
   let sites = [];
   if (options.file) {
@@ -154,7 +131,6 @@ function sitesInfo(options) {
     return info;
   });
 }
-
 function lighthouseScript(options, log) {
   if (options.useGlobal) {
     if (exec("lighthouse --version").code === 0) {
@@ -181,13 +157,10 @@ function lighthouseScript(options, log) {
   log(`Targeting local Lighthouse cli at '${cliPath}'`);
   return `node ${cliPath}`;
 }
-
 function siteName(site) {
   return site.replace(/^https?:\/\//, "").replace(/[\/\?#:\*\$@\!\.]/g, "_");
 }
-
 function log(v, msg) {
   if (v) console.log(msg);
 }
-
 module.exports = execute;
