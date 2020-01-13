@@ -85,12 +85,12 @@ const readFiles = (name, runs) => {
           });
           const avg = {
             url: summary.url,
-            performanceAvg: (summary.performance.sum() / summary.performance.length).toFixed(2),
-            accessibilityAvg: (summary.accessibility.sum() / summary.accessibility.length).toFixed(2),
-            bestPracticesAvg: (summary.bestPractices.sum() / summary.bestPractices.length).toFixed(2),
-            seoAvg: (summary.seo.sum() / summary.seo.length).toFixed(2),
-            firstMeaningfulPaintAvg: (summary.firstMeaningfulPaint.sum() / summary.firstMeaningfulPaint.length).toFixed(2),
-            timeToInteractiveAvg: (summary.timeToInteractive.sum() / summary.timeToInteractive.length).toFixed(2)
+            performanceAvg: ((summary.performance.sum() / summary.performance.length)*100).toFixed(2),
+            accessibilityAvg: ((summary.accessibility.sum() / summary.accessibility.length)*100).toFixed(2),
+            bestPracticesAvg: ((summary.bestPractices.sum() / summary.bestPractices.length)*100).toFixed(2),
+            seoAvg: ((summary.seo.sum() / summary.seo.length)*100).toFixed(2),
+            firstMeaningfulPaintAvg: ((summary.firstMeaningfulPaint.sum() / summary.firstMeaningfulPaint.length)/1000).toFixed(2),
+            timeToInteractiveAvg: ((summary.timeToInteractive.sum() / summary.timeToInteractive.length)/1000).toFixed(2)
           };
           averages.push(avg);
           console.log(averages);
