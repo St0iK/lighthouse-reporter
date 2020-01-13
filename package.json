@@ -1,6 +1,6 @@
 {
-  "name": "lighthouse-batch",
-  "version": "5.0.1",
+  "name": "lighthouse-batch-reporter",
+  "version": "0.0.1",
   "description": "Generate lighthouse reports for one or more websites",
   "main": "index.js",
   "bin": {
@@ -13,7 +13,7 @@
   "license": "MIT",
   "dependencies": {
     "commander": "^2.9.0",
-    "lighthouse": "^5.1.0",
+    "lighthouse": "^5.6.0",
     "shelljs": "^0.7.6"
   }
 }
